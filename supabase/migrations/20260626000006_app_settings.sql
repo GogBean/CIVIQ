@@ -1,0 +1,12 @@
+-- ─── App Settings: Required by the gemini-tag trigger and cron scheduler ────────
+-- These values are read by trigger_gemini_tag() and the pg_cron job via the
+-- public.app_settings table.
+--
+-- IMPORTANT: After running the migrations, you must populate the configuration values
+-- in the public.app_settings table by running the following SQL:
+--
+--   INSERT INTO public.app_settings (key, value) VALUES
+--     ('supabase_url', 'https://<your-ref>.supabase.co'),
+--     ('webhook_secret', '<your-secret>')
+--   ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+--
