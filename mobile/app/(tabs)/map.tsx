@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { Platform, View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MapView, { Marker, Region } from 'react-native-maps';
+import type { Region } from 'react-native-maps';
 import { supabase } from '../../lib/supabase';
 import { IssueDetails } from '../../lib/issues';
 import * as Location from 'expo-location';
+
+const MapView = Platform.OS === 'web' ? null : require('react-native-maps').default;
+const Marker = Platform.OS === 'web' ? null : require('react-native-maps').Marker;
 
 function getCategoryColor(category: string): string {
   switch (category) {
@@ -61,7 +64,7 @@ function formatRelativeTime(dateString: string): string {
 }
 
 export default function MapScreen() {
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<any>(null);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [issues, setIssues] = useState<IssueDetails[]>([]);
@@ -205,36 +208,46 @@ export default function MapScreen() {
   return (
     <View className="flex-1 bg-slate-100">
       <View className="flex-[0.54] relative">
-        <MapView
-          ref={mapRef}
-          className="flex-1"
-          region={mapRegion}
-          onRegionChangeComplete={setMapRegion}
-          showsUserLocation
-          showsMyLocationButton={false}
-        >
-          {filteredIssues.map((issue) => {
-            const coords = getIssueCoords(issue.location);
-            if (!coords) return null;
+        {MapView && Marker ? (
+          <MapView
+            ref={mapRef}
+            className="flex-1"
+            region={mapRegion}
+            onRegionChangeComplete={setMapRegion}
+            showsUserLocation
+            showsMyLocationButton={false}
+          >
+            {filteredIssues.map((issue) => {
+              const coords = getIssueCoords(issue.location);
+              if (!coords) return null;
 
-            return (
-              <Marker
-                key={issue.id}
-                coordinate={coords}
-                onPress={() => setSelectedIssue(issue)}
-              >
-                <View
-                  className="items-center justify-center p-1.5 rounded-full shadow-md border-2 border-white"
-                  style={{ backgroundColor: getCategoryColor(issue.category) }}
+              return (
+                <Marker
+                  key={issue.id}
+                  coordinate={coords}
+                  onPress={() => setSelectedIssue(issue)}
                 >
-                  <Text className="text-white text-[10px] font-black px-1 py-0.5">
-                    {issue.severity || 3}
-                  </Text>
-                </View>
-              </Marker>
-            );
-          })}
-        </MapView>
+                  <View
+                    className="items-center justify-center p-1.5 rounded-full shadow-md border-2 border-white"
+                    style={{ backgroundColor: getCategoryColor(issue.category) }}
+                  >
+                    <Text className="text-white text-[10px] font-black px-1 py-0.5">
+                      {issue.severity || 3}
+                    </Text>
+                  </View>
+                </Marker>
+              );
+            })}
+          </MapView>
+        ) : (
+          <View className="flex-1 items-center justify-center bg-slate-200 px-8">
+            <Ionicons name="map-outline" size={36} color="#94a3b8" />
+            <Text className="text-slate-700 font-black text-base mt-3 text-center">Map preview is unavailable on web</Text>
+            <Text className="text-slate-500 text-xs text-center mt-2 leading-5">
+              Browse the latest reports below and use search to filter the feed.
+            </Text>
+          </View>
+        )}
 
         <View className="absolute top-4 left-4 right-4 z-10">
           <View className="bg-white rounded-2xl shadow-md border border-slate-100 px-4 py-3 mb-2">

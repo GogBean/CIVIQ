@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { File } from 'expo-file-system';
+import { Platform } from 'react-native';
 
 // --- Types ---------------------------------------------------------------
 
@@ -53,6 +54,12 @@ const sleep = (ms: number) => new Promise<void>((res) => setTimeout(res, ms));
 async function readUploadBodyFromUri(
   uri: string,
 ): Promise<{ body: Blob | ArrayBuffer; size: number }> {
+  if (Platform.OS === 'web') {
+    const response = await fetch(uri);
+    const body = await response.blob();
+    return { body, size: body.size };
+  }
+
   const file = new File(uri);
   const body = await file.arrayBuffer();
   return { body, size: file.size };

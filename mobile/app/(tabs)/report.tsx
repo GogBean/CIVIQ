@@ -12,7 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { File } from 'expo-file-system';
-import MapView, { Marker, MapPressEvent, Region } from 'react-native-maps';
+import type { MapPressEvent, Region } from 'react-native-maps';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,6 +22,9 @@ import { uploadIssueImage, UploadResult, UploadProgress } from '../../lib/upload
 import { submitIssue, getIssueById, IssueDetails, IssueCategory } from '../../lib/issues';
 import { useAuthStore } from '../../lib/auth-store';
 import { supabase } from '../../lib/supabase';
+
+const MapView = Platform.OS === 'web' ? null : require('react-native-maps').default;
+const Marker = Platform.OS === 'web' ? null : require('react-native-maps').Marker;
 
 
 // Step definitions
@@ -46,7 +49,7 @@ interface Coords {
 }
 
 export default function Report() {
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<any>(null);
   const { session } = useAuthStore();
 
   // Step state
@@ -180,8 +183,10 @@ export default function Report() {
 
   async function uriToBase64(uri: string): Promise<string> {
     try {
-      const file = new File(uri);
-      const buffer = await file.arrayBuffer();
+      const buffer =
+        Platform.OS === 'web'
+          ? await (await fetch(uri)).arrayBuffer()
+          : await new File(uri).arrayBuffer();
       return bytesToBase64(new Uint8Array(buffer));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -851,24 +856,36 @@ export default function Report() {
           </View>
 
           {/* Map */}
-          <MapView
-            ref={mapRef}
-            className="flex-1"
-            region={mapRegion}
-            onPress={handleMapPress}
-            onRegionChangeComplete={setMapRegion}
-            showsUserLocation
-            showsMyLocationButton={false}
-          >
-            {coords && (
-              <Marker
-                coordinate={coords}
-                draggable
-                onDragEnd={(e) => setCoords(e.nativeEvent.coordinate)}
-                pinColor="#0284c7"
-              />
-            )}
-          </MapView>
+          {MapView && Marker ? (
+            <MapView
+              ref={mapRef}
+              className="flex-1"
+              region={mapRegion}
+              onPress={handleMapPress}
+              onRegionChangeComplete={setMapRegion}
+              showsUserLocation
+              showsMyLocationButton={false}
+            >
+              {coords && (
+                <Marker
+                  coordinate={coords}
+                  draggable
+                  onDragEnd={(e: any) => setCoords(e.nativeEvent.coordinate)}
+                  pinColor="#0284c7"
+                />
+              )}
+            </MapView>
+          ) : (
+            <View className="flex-1 items-center justify-center bg-slate-100 px-6">
+              <Ionicons name="map-outline" size={40} color="#94a3b8" />
+              <Text className="text-slate-700 font-black text-base mt-3 text-center">
+                Location pinning is available on Android and iOS
+              </Text>
+              <Text className="text-slate-500 text-xs text-center mt-2 leading-5">
+                Use GPS and continue the report on a native device to place the marker on the map.
+              </Text>
+            </View>
+          )}
 
           {/* Bottom bar */}
           <View className="bg-white border-t border-slate-100 px-5 py-4">
