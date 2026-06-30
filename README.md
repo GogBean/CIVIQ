@@ -13,6 +13,11 @@
 <img width="1919" height="1072" alt="Screenshot 2026-06-30 232419" src="https://github.com/user-attachments/assets/829f48b6-d5c2-4e92-af84-77e1a4312b4c" />
 <img width="1919" height="1073" alt="Screenshot 2026-06-30 232527" src="https://github.com/user-attachments/assets/170dc904-a1e9-4f15-9b35-d22dc1a5da5a" />
 <img width="1836" height="974" alt="Screenshot 2026-06-30 232756" src="https://github.com/user-attachments/assets/b0d5b92d-049d-4046-88cf-e0f24383253c" />
+<img width="1919" height="806" alt="Screenshot 2026-07-01 002455" src="https://github.com/user-attachments/assets/ba2a07fa-7af8-43ad-bc2c-438ad7c3984e" />
+<img width="1919" height="830" alt="Screenshot 2026-07-01 002512" src="https://github.com/user-attachments/assets/bf904a29-50cb-462e-b655-c67da63fd5a1" />
+<img width="1918" height="808" alt="Screenshot 2026-07-01 002433" src="https://github.com/user-attachments/assets/5049fea2-19de-4495-86a8-83498d4886af" />
+<img width="1919" height="807" alt="Screenshot 2026-07-01 002443" src="https://github.com/user-attachments/assets/d3f70cc5-2cdb-4111-81d3-71b477b3f083" />
+
 
 # CIVIQ - Community Hero: Hyperlocal Problem Solver
 
